@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" prefHeight="315.0" prefWidth="516.0" spacing="20.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.smart4aviation.MainController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <FlowPane fx:id="iata_pane" prefHeight="200.0" prefWidth="200.0">
+        <Label maxHeight="50.0" maxWidth="100.0" text="Please, select airport and date: " wrapText="true" />
+        <ChoiceBox fx:id="iata_list" prefWidth="150.0" />
+        <DatePicker fx:id="iata_date" />
+        <Button fx:id="fetch_iata" mnemonicParsing="false" onAction="#onIATAButtonClick" text="Fetch" />
+      <VBox alignment="CENTER" prefHeight="69.0" prefWidth="445.0">
+         <children>
+            <Label fx:id="num_arr_flights" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
+            <Label fx:id="num_dep_flights" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
+            <Label fx:id="num_arr_pieces" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
+            <Label fx:id="num_dep_pieces" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
+         </children>
+      </VBox>
+    </FlowPane>
+    <FlowPane prefHeight="200.0" prefWidth="200.0">
+        <Label maxHeight="50.0" maxWidth="100.0" text="Please, select flight and date: " wrapText="true" />
+        <ChoiceBox fx:id="flight_list" prefWidth="150.0" />
+        <DatePicker fx:id="flight_date" />
+        <Button fx:id="fetch_flight" mnemonicParsing="false" onAction="#onFlightButtonClick" text="Fetch" />
+        <VBox alignment="CENTER" prefHeight="69.0" prefWidth="445.0">
+            <children>
+                <Label fx:id="cargo_weight" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
+                <Label fx:id="baggage_weight" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
+                <Label fx:id="total_weight" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
+            </children>
+        </VBox>
+    </FlowPane>
+</VBox>

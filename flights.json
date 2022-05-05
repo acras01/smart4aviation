@@ -1,0 +1,37 @@
+[
+  {
+    "flightId": 0,
+    "flightNumber": 9487,
+    "departureAirportIATACode": "YYT",
+    "arrivalAirportIATACode": "GDN",
+    "departureDate": "2014-10-18T07:25:03-03:00"
+  },
+  {
+    "flightId": 1,
+    "flightNumber": 3079,
+    "departureAirportIATACode": "LAX",
+    "arrivalAirportIATACode": "GDN",
+    "departureDate": "2019-02-11T08:40:46-02:00"
+  },
+  {
+    "flightId": 2,
+    "flightNumber": 9535,
+    "departureAirportIATACode": "YYZ",
+    "arrivalAirportIATACode": "GDN",
+    "departureDate": "2020-01-08T07:57:25-02:00"
+  },
+  {
+    "flightId": 3,
+    "flightNumber": 2320,
+    "departureAirportIATACode": "ANC",
+    "arrivalAirportIATACode": "LEW",
+    "departureDate": "2015-09-15T02:21:12-03:00"
+  },
+  {
+    "flightId": 4,
+    "flightNumber": 7433,
+    "departureAirportIATACode": "ANC",
+    "arrivalAirportIATACode": "GDN",
+    "departureDate": "2018-08-29T06:31:11-03:00"
+  }
+]
