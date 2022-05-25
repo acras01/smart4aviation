@@ -15,7 +15,7 @@ import java.util.List;
 public class Utils {
 
     public static class Data {
-        public List<Flights> flights;
+        public List<Flight> flights;
         public List<Cargoes> cargo;
 
         public Data() {
@@ -28,7 +28,7 @@ public class Utils {
         BufferedReader br = new BufferedReader(new FileReader(file));
         Gson gson = new Gson();
         JsonElement jsonElement = JsonParser.parseReader(br);
-        Type type = new TypeToken<ArrayList<Flights>>() {}.getType();
+        Type type = new TypeToken<ArrayList<Flight>>() {}.getType();
         res.flights = gson.fromJson(jsonElement, type);
 
         file = System.getProperty("user.dir") + "/cargo.json";

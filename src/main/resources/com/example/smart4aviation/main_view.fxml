@@ -13,14 +13,16 @@
         <ChoiceBox fx:id="iata_list" prefWidth="150.0" />
         <DatePicker fx:id="iata_date" />
         <Button fx:id="fetch_iata" mnemonicParsing="false" onAction="#onIATAButtonClick" text="Fetch" />
-      <VBox alignment="CENTER" prefHeight="69.0" prefWidth="445.0">
-         <children>
-            <Label fx:id="num_arr_flights" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
-            <Label fx:id="num_dep_flights" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
-            <Label fx:id="num_arr_pieces" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
-            <Label fx:id="num_dep_pieces" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
-         </children>
-      </VBox>
+        <VBox alignment="CENTER" prefHeight="69.0" prefWidth="445.0">
+            <Label fx:id="num_arr_flights" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false"
+                   wrapText="true"/>
+            <Label fx:id="num_dep_flights" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false"
+                   wrapText="true"/>
+            <Label fx:id="num_arr_pieces" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false"
+                   wrapText="true"/>
+            <Label fx:id="num_dep_pieces" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false"
+                   wrapText="true"/>
+        </VBox>
     </FlowPane>
     <FlowPane prefHeight="200.0" prefWidth="200.0">
         <Label maxHeight="50.0" maxWidth="100.0" text="Please, select flight and date: " wrapText="true" />
@@ -28,11 +30,12 @@
         <DatePicker fx:id="flight_date" />
         <Button fx:id="fetch_flight" mnemonicParsing="false" onAction="#onFlightButtonClick" text="Fetch" />
         <VBox alignment="CENTER" prefHeight="69.0" prefWidth="445.0">
-            <children>
-                <Label fx:id="cargo_weight" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
-                <Label fx:id="baggage_weight" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
-                <Label fx:id="total_weight" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false" wrapText="true" />
-            </children>
+            <Label fx:id="cargo_weight" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false"
+                   wrapText="true"/>
+            <Label fx:id="baggage_weight" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false"
+                   wrapText="true"/>
+            <Label fx:id="total_weight" maxHeight="50.0" maxWidth="350.0" textAlignment="CENTER" visible="false"
+                   wrapText="true"/>
         </VBox>
     </FlowPane>
 </VBox>

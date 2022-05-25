@@ -1,13 +1,13 @@
 package com.example.smart4aviation;
 
-public class Flights {
+public class Flight {
     public int flightId;
     public int flightNumber;
     public String departureAirportIATACode;
     public String arrivalAirportIATACode;
     public String departureDate;
 
-    public Flights(int id, int number, String departure, String arrival, String date) {
+    public Flight(int id, int number, String departure, String arrival, String date) {
         this.flightId = id;
         this.flightNumber = number;
         this.departureAirportIATACode = departure;

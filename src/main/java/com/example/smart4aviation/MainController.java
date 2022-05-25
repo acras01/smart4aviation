@@ -6,15 +6,18 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
@@ -36,7 +39,7 @@ public class MainController {
     public Label baggage_weight;
     public Label total_weight;
 
-    List<Flights> flights = new ArrayList<>();
+    List<Flight> flights = new ArrayList<>();
     List<Cargoes> cargo = new ArrayList<>();
 
     private final Executor executor = Executors.newSingleThreadExecutor(r -> {
@@ -60,11 +63,17 @@ public class MainController {
                 flights = task.getValue().flights;
                 cargo = task.getValue().cargo;
             }
-            List<Integer> flist = flights.stream().map(Flights::getFlightNumber).toList();
+            List<Integer> flist = flights.stream()
+                    .map(Flight::getFlightNumber)
+                    .toList();
             flight_list.setItems(FXCollections.observableList(flist));
 
-            List<String> alist = new ArrayList<>(flights.stream().map(Flights::getArrivalIATA).toList());
-            alist.addAll(flights.stream().map(Flights::getDepartureIATA).toList());
+            List<String> alist = new ArrayList<>(flights.stream()
+                    .map(Flight::getArrivalIATA)
+                    .toList());
+            alist.addAll(flights.stream()
+                    .map(Flight::getDepartureIATA)
+                    .toList());
             alist = new ArrayList<>(new HashSet<>(alist));
             iata_list.setItems(FXCollections.observableList(alist));
         });
@@ -78,13 +87,11 @@ public class MainController {
                     num_dep_flights.setVisible(false);
                     num_arr_pieces.setVisible(false);
                     num_dep_pieces.setVisible(false);
-                    List<LocalDate> dates = new ArrayList<>();
-                    for (Flights f : flights) {
-                        if (new_value.equals(f.arrivalAirportIATACode) ||
-                                new_value.equals(f.departureAirportIATACode)) {
-                            dates.add(LocalDate.parse(f.departureDate, ISO_OFFSET_DATE_TIME));
-                        }
-                    }
+                    List<LocalDate> dates = flights.stream()
+                            .filter(flight -> new_value.equals(flight.arrivalAirportIATACode) ||
+                                    new_value.equals(flight.departureAirportIATACode))
+                            .map(flight -> LocalDate.parse(flight.departureDate, ISO_OFFSET_DATE_TIME))
+                            .collect(Collectors.toList());
                     restrictDatePicker(iata_date, dates);
                     iata_date.setValue(dates.get(0));
                     iata_date.setDisable(false);
@@ -95,24 +102,18 @@ public class MainController {
                     cargo_weight.setVisible(false);
                     baggage_weight.setVisible(false);
                     total_weight.setVisible(false);
-                    List<LocalDate> dates = new ArrayList<>();
-                    for (Flights f : flights) {
-                        if (new_value.intValue() == f.flightId) {
-                            dates.add(LocalDate.parse(f.departureDate, ISO_OFFSET_DATE_TIME));
-                        }
-                    }
+                    List<LocalDate> dates = flights.stream()
+                            .filter(flight -> new_value.intValue() == flight.flightId)
+                            .map(flight -> LocalDate.parse(flight.departureDate, ISO_OFFSET_DATE_TIME))
+                            .collect(Collectors.toList());
                     restrictDatePicker(flight_date, dates);
                     flight_date.setValue(dates.get(0));
                     flight_date.setDisable(false);
                 });
 
-        iata_date.valueProperty().addListener((ov, oldDate, newDate) -> {
-            fetch_iata.setDisable(false);
-        });
+        iata_date.valueProperty().addListener((ov, oldDate, newDate) -> fetch_iata.setDisable(false));
 
-        flight_date.valueProperty().addListener((ov, oldDate, newDate) -> {
-            fetch_flight.setDisable(false);
-        });
+        flight_date.valueProperty().addListener((ov, oldDate, newDate) -> fetch_flight.setDisable(false));
     }
 
     public void restrictDatePicker(DatePicker datePicker, List<LocalDate> dates) {
@@ -151,25 +152,24 @@ public class MainController {
         String date = iata_date.getValue().format(ISO_DATE);
         int dep_weight_pieces = 0;
         int arr_weight_pieces = 0;
-        int arr_flights = 0;
-        int dep_flights = 0;
-        List <Flights> flightsToDate = flights.stream().filter(f -> LocalDate.parse(f.departureDate, ISO_OFFSET_DATE_TIME).format(ISO_DATE).equals(date)).toList();
-        for (Flights f : flightsToDate) {
-            List<Cargoes> cargo_flight = cargo.stream().filter(c -> c.flightId == f.flightId).toList();
+        List <Flight> flightsToDate = flights.stream()
+                .filter(f -> LocalDate.parse(f.departureDate, ISO_OFFSET_DATE_TIME)
+                        .format(ISO_DATE).equals(date))
+                .toList();
+        long arr_flights = flightsToDate.stream()
+                .filter(f -> f.arrivalAirportIATACode.equals(iata))
+                .count();
+        long dep_flights = flightsToDate.stream()
+                .filter(f -> f.departureAirportIATACode.equals(iata))
+                .count();
+        for (Flight f : flightsToDate) {
+            List<Cargoes> cargo_flight = cargo.stream()
+                    .filter(c -> c.flightId == f.flightId)
+                    .toList();
             if (f.arrivalAirportIATACode.equals(iata)) {
-                arr_flights++;
-                for (Cargoes c : cargo_flight) {
-                    for (Cargoes.Baggage b : c.baggage) {
-                        arr_weight_pieces += b.pieces;
-                    }
-                }
+                arr_weight_pieces += sumWeightPieces.apply(cargo_flight);
             } else if (f.departureAirportIATACode.equals(iata)) {
-                dep_flights++;
-                for (Cargoes c : cargo_flight) {
-                    for (Cargoes.Baggage b : c.baggage) {
-                        dep_weight_pieces += b.pieces;
-                    }
-                }
+                dep_weight_pieces += sumWeightPieces.apply(cargo_flight);
             }
         }
         num_arr_flights.setText("Number of arriving flights: " + arr_flights);
@@ -183,44 +183,65 @@ public class MainController {
 
     }
 
+    @FXML
     public void onFlightButtonClick(ActionEvent actionEvent) {
         int flight = flight_list.getSelectionModel().getSelectedItem();
         String date = flight_date.getValue().format(ISO_DATE);
-        int cargolbs = 0;
-        int baggagelbs = 0;
-        int totallbs = 0;
-        int cargokg = 0;
-        int baggagekg = 0;
-        int totalkg = 0;
-        List<Flights> flightsToDate = flights
+        int[] cargoAndBaggage = {0, 0, 0, 0};
+        List<Flight> flightsToDate = flights
                 .stream()
-                .filter(f -> LocalDate.parse(f.departureDate, ISO_OFFSET_DATE_TIME).format(ISO_DATE).equals(date))
+                .filter(f -> LocalDate.parse(f.departureDate, ISO_OFFSET_DATE_TIME)
+                        .format(ISO_DATE).equals(date))
                 .filter(f -> f.flightNumber == flight)
                 .toList();
-        for (Flights f : flightsToDate) {
-            List<Cargoes> cargo_flight = cargo.stream().filter(c -> c.flightId == f.flightId).toList();
-            for (Cargoes c : cargo_flight) {
-                for (Cargoes.Baggage b : c.baggage) {
-                    switch (b.weightUnit) {
-                        case ("lb") -> baggagelbs += b.weight;
-                        case ("kg") -> baggagekg += b.weight;
-                    }
-                }
-                for (Cargoes.Cargo car : c.cargo) {
-                    switch (car.weightUnit) {
-                        case ("lb") -> cargolbs += car.weight;
-                        case ("kg") -> cargokg += car.weight;
-                    }
-                }
-            }
-        }
-        totallbs = baggagelbs + cargolbs;
-        totalkg = baggagekg + cargokg;
-        cargo_weight.setText("Weight of cargo in lb: " + cargolbs + ". Weight of cargo in kg: " + cargokg);
+        flightsToDate.forEach( (f) -> {
+            List<Cargoes> cargo_flight = cargo.stream()
+                    .filter(c -> c.flightId == f.flightId)
+                    .toList();
+            cargoAndBaggage[0] += sumWeightBaggageUnit.apply(cargo_flight, "lb");
+            cargoAndBaggage[1] += sumWeightBaggageUnit.apply(cargo_flight, "kg");
+            cargoAndBaggage[2] += sumWeightCargoUnit.apply(cargo_flight, "lb");
+            cargoAndBaggage[3] += sumWeightCargoUnit.apply(cargo_flight, "kg");
+        });
+        int totallbs = cargoAndBaggage[0] + cargoAndBaggage[2];
+        int totalkg = cargoAndBaggage[1] + cargoAndBaggage[3];
+        cargo_weight.setText("Weight of cargo in lb: " + cargoAndBaggage[2] + ". Weight of cargo in kg: " + cargoAndBaggage[3]);
         cargo_weight.setVisible(true);
-        baggage_weight.setText("Weight of baggage in lb: " + baggagelbs + ". Weight of baggage in kg: " + baggagekg);
+        baggage_weight.setText("Weight of baggage in lb: " + cargoAndBaggage[0] + ". Weight of baggage in kg: " + cargoAndBaggage[1]);
         baggage_weight.setVisible(true);
         total_weight.setText("Total weight in lb: " + totallbs + ". Total weight in kg: " + totalkg);
         total_weight.setVisible(true);
     }
+
+    Function<List<Cargoes>, Integer> sumWeightPieces = (cargoes ->
+            cargoes.stream()
+            .map(cargo -> cargo.baggage)
+            .map(baggages -> Arrays.stream(baggages).
+                    map(baggage -> baggage.pieces)
+                    .reduce(Integer::sum)
+                    .orElse(0))
+            .reduce(Integer::sum)
+            .orElse(0));
+
+    BiFunction<List<Cargoes>, String, Integer> sumWeightBaggageUnit = ((cargoes, unit) ->
+            cargoes.stream()
+                    .map(cargo -> cargo.baggage)
+                    .map(baggages -> Arrays.stream(baggages)
+                            .filter(baggage -> baggage.weightUnit.equals(unit))
+                            .map(baggage -> baggage.weight)
+                            .reduce(Integer::sum)
+                            .orElse(0))
+                    .reduce(Integer::sum)
+                    .orElse(0));
+
+    BiFunction<List<Cargoes>, String, Integer> sumWeightCargoUnit = ((cargoes, unit) ->
+            cargoes.stream()
+                    .map(cargo -> cargo.cargo)
+                    .map(baggages -> Arrays.stream(baggages)
+                            .filter(baggage -> baggage.weightUnit.equals(unit))
+                            .map(baggage -> baggage.weight)
+                            .reduce(Integer::sum)
+                            .orElse(0))
+                    .reduce(Integer::sum)
+                    .orElse(0));
 }
